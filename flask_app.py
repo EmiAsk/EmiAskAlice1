@@ -12,6 +12,8 @@ logging.basicConfig(level=logging.INFO)
 
 sessionStorage = {}
 
+animals = [('слон', 'слона'), ('кролик', 'кролика')]
+
 
 # Если понадобится, то вот моё приложение на хероку для теста
 # https://test-alice-yl.herokuapp.com/post
@@ -31,23 +33,23 @@ def main():
 
     logging.info(f'Response:  {response!r}')
 
+    # Преобразовываем в JSON и возвращаем
     return json.dumps(response)
 
 
 def handle_dialog(req, res):
     user_id = req['session']['user_id']
 
+    animal = sessionStorage[user_id].get('animal', animals[0])
+
     if req['session']['new']:
 
-        sessionStorage[user_id] = {
-            'suggests': [
+        sessionStorage[user_id]['suggests'] = [
                 "Не хочу.",
                 "Не буду.",
-                "Отстань!",
-            ]
-        }
+                "Отстань!"]
         # Заполняем текст ответа
-        res['response']['text'] = 'Привет! Купи слона!'
+        res['response']['text'] = f'Привет! Купи {animal[1]}!'
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
         return
@@ -56,17 +58,23 @@ def handle_dialog(req, res):
         'ладно',
         'куплю',
         'покупаю',
-        'хорошо',
-        'я покупаю',
-        'я куплю']:
+        'хорошо'
+    ]:
         # Пользователь согласился, прощаемся.
-        res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
+        res['response']['text'] = f'{animal[1].capitalize()} можно найти на Яндекс.Маркете!'
+
+        if animal == animals[0]:
+            sessionStorage[user_id]['animal'] = animals[1]
+            req['session']['new'] = True
+            handle_dialog(req, res)
+            return 
+            
         res['response']['end_session'] = True
         return
 
     # Если нет, то убеждаем его купить слона!
     res['response']['text'] = \
-        f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
+        f"Все говорят '{req['request']['original_utterance']}', а ты купи {animal[1]}!"
     res['response']['buttons'] = get_suggests(user_id)
 
 
@@ -89,7 +97,7 @@ def get_suggests(user_id):
     if len(suggests) < 2:
         suggests.append({
             "title": "Ладно",
-            "url": "https://market.yandex.ru/search?text=слон",
+            "url": f"https://market.yandex.ru/search?text={sessionStorage['animal'][0]}",
             "hide": True
         })
 

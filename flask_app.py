@@ -48,7 +48,8 @@ def handle_dialog(req, res):
         sessionStorage[user_id] = {
             'suggests': suggests[:]}
 
-        animal = sessionStorage[user_id]['animal'] = animals[0]
+        animal = animals[0]
+        sessionStorage[user_id]['animal'] = animals[0]
         res['response']['text'] = f'Привет! Купи {animal[1]}!'
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
@@ -100,7 +101,7 @@ def get_suggests(user_id):
     if len(suggests) < 2:
         suggests.append({
             "title": "Ладно",
-            "url": f"https://market.yandex.ru/search?text={sessionStorage['animal'][0]}",
+            "url": f"https://market.yandex.ru/search?text={sessionStorage[user_id]['animal'][0]}",
             "hide": True
         })
 

@@ -44,17 +44,17 @@ def main():
 def handle_dialog(req, res):
     user_id = req['session']['user_id']
 
-    animal = sessionStorage[user_id].get('animal', animals[0])
-
     if req['session']['new']:
+        sessionStorage[user_id] = {
+            'suggests': suggests[:]}
 
-        sessionStorage[user_id]['suggests'] = suggests[:]
-        # Заполняем текст ответа
+        animal = sessionStorage[user_id]['animal'] = animals[0]
         res['response']['text'] = f'Привет! Купи {animal[1]}!'
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
         return
 
+    animal = sessionStorage[user_id].get('animal', animals[0])
     if req['request']['original_utterance'].lower() in [
         'ладно',
         'куплю',
@@ -63,7 +63,7 @@ def handle_dialog(req, res):
     ]:
         # Пользователь согласился, прощаемся.
         msg = f'{animal[1].capitalize()} можно найти на Яндекс.Маркете!'
-        
+
         if animal == animals[0]:
             animal = animals[1] = sessionStorage[user_id]['animal']
             msg += f' А теперь купите {animal[1]}!'
@@ -109,4 +109,4 @@ def get_suggests(user_id):
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='127.0.0.1', port=port)

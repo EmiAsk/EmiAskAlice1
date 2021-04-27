@@ -3,7 +3,6 @@ from flask import Flask, request
 import logging
 import os
 
-# библиотека, которая нам понадобится для работы с JSON
 import json
 
 # создаём приложение

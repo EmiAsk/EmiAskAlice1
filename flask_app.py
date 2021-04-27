@@ -48,8 +48,7 @@ def handle_dialog(req, res):
         sessionStorage[user_id] = {
             'suggests': suggests[:]}
 
-        animal = animals[0]
-        sessionStorage[user_id]['animal'] = animals[0]
+        animal = sessionStorage[user_id]['animal'] = animals[0]
         res['response']['text'] = f'Привет! Купи {animal[1]}!'
         # Получим подсказки
         res['response']['buttons'] = get_suggests(user_id)
@@ -66,9 +65,10 @@ def handle_dialog(req, res):
         msg = f'{animal[1].capitalize()} можно найти на Яндекс.Маркете!'
 
         if animal == animals[0]:
-            animal = animals[1] = sessionStorage[user_id]['animal']
+            animal = sessionStorage[user_id]['animal'] = animals[1]
             msg += f' А теперь купите {animal[1]}!'
             sessionStorage[user_id]['suggests'] = suggests[:]
+            res['response']['buttons'] = get_suggests(user_id)
 
         elif animal == animals[1]:
             res['response']['end_session'] = True

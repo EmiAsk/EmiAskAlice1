@@ -31,7 +31,6 @@ def main():
 
     logging.info(f'Response:  {response!r}')
 
-    # Преобразовываем в JSON и возвращаем
     return json.dumps(response)
 
 

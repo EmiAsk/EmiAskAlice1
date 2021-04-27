@@ -1,4 +1,4 @@
-# импортируем библиотеки
+# импортируем библиотек
 from flask import Flask, request
 import logging
 import os

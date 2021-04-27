@@ -13,6 +13,10 @@ logging.basicConfig(level=logging.INFO)
 sessionStorage = {}
 
 animals = [('слон', 'слона'), ('кролик', 'кролика')]
+suggests = [
+                "Не хочу.",
+                "Не буду.",
+                "Отстань!"]
 
 
 # Если понадобится, то вот моё приложение на хероку для теста
@@ -44,10 +48,7 @@ def handle_dialog(req, res):
 
     if req['session']['new']:
 
-        sessionStorage[user_id]['suggests'] = [
-                "Не хочу.",
-                "Не буду.",
-                "Отстань!"]
+        sessionStorage[user_id]['suggests'] = suggests[:]
         # Заполняем текст ответа
         res['response']['text'] = f'Привет! Купи {animal[1]}!'
         # Получим подсказки
@@ -61,15 +62,17 @@ def handle_dialog(req, res):
         'хорошо'
     ]:
         # Пользователь согласился, прощаемся.
-        res['response']['text'] = f'{animal[1].capitalize()} можно найти на Яндекс.Маркете!'
-
+        msg = f'{animal[1].capitalize()} можно найти на Яндекс.Маркете!'
+        
         if animal == animals[0]:
-            sessionStorage[user_id]['animal'] = animals[1]
-            req['session']['new'] = True
-            handle_dialog(req, res)
-            return 
-            
-        res['response']['end_session'] = True
+            animal = animals[1] = sessionStorage[user_id]['animal']
+            msg += f' А теперь купите {animal[1]}!'
+            sessionStorage[user_id]['suggests'] = suggests[:]
+
+        elif animal == animals[1]:
+            res['response']['end_session'] = True
+
+        res['response']['text'] = msg
         return
 
     # Если нет, то убеждаем его купить слона!

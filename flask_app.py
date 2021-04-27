@@ -12,7 +12,9 @@ logging.basicConfig(level=logging.INFO)
 
 sessionStorage = {}
 
-# Если понадобится, то вот моё приложение на хероку для теста - https://test-alice-yl.herokuapp.com/post
+
+# Если понадобится, то вот моё приложение на хероку для теста
+# https://test-alice-yl.herokuapp.com/post
 @app.route('/post', methods=['POST'])
 def main():
     logging.info(f'Request: {request.json!r}')
@@ -56,6 +58,8 @@ def handle_dialog(req, res):
         'куплю',
         'покупаю',
         'хорошо'
+        'я покупаю',
+        'я куплю',
     ]:
         # Пользователь согласился, прощаемся.
         res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
